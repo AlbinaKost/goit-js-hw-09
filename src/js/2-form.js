@@ -2,27 +2,27 @@ const form = document.querySelector('.feedback-form');
 const email = form.elements.email;
 const message = form.elements.message;
 const localStorageKey = 'feedback-form-state';
+
 try {
-  email.value = JSON.parse(localStorage.getItem(localStorageKey)).email ?? '';
-  message.value =
-    JSON.parse(localStorage.getItem(localStorageKey)).message ?? '';
+  const savedData = JSON.parse(localStorage.getItem(localStorageKey)) || {};
+  email.value = savedData.email?.trim() || '';
+  message.value = savedData.message?.trim() || '';
 } catch (error) {}
 
-form.addEventListener('input', () =>
-  localStorage.setItem(
-    localStorageKey,
-    JSON.stringify({
-      email: email.value,
-      message: message.value,
-    })
-  )
-);
+form.addEventListener('input', () => {
+  const dataToSave = {
+    email: email.value.trim(),
+    message: message.value.trim(),
+  };
+  localStorage.setItem(localStorageKey, JSON.stringify(dataToSave));
+});
+
 form.addEventListener('submit', e => {
   e.preventDefault();
-  if (email.value !== '' && message.value !== '') {
+  if (email.value.trim() !== '' && message.value.trim() !== '') {
     console.log({
-      email: email.value,
-      message: message.value,
+      email: email.value.trim(),
+      message: message.value.trim(),
     });
     localStorage.removeItem(localStorageKey);
     form.reset();
